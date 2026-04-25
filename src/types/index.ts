@@ -7,6 +7,7 @@ export interface Recipe {
   cookTime: number;
   servings: number;
   description: string;
+  calories: number;
   flags: {
     quick: boolean;
     leftover: boolean;
@@ -21,5 +22,5 @@ export interface Ingredient {
   addedAt: number;
 }
 
-export type FilterFlag = 'quick' | 'leftover' | 'mealprep' | 'single';
+export type CookTimeFilter = 'any' | 'under15' | 'under30' | 'over30';
 export type CategoryFilter = 'all' | 'japanese' | 'western' | 'chinese';

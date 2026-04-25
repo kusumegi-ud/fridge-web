@@ -10,7 +10,7 @@ import RecipeList from '@/components/RecipeList';
 
 const DEFAULT_FILTER: FilterState = {
   category: 'all',
-  flags: [],
+  cookTime: 'any',
   search: '',
 };
 
@@ -23,7 +23,7 @@ export default function Home() {
 
   if (!loaded) {
     return (
-      <main className="max-w-6xl mx-auto px-4 py-8">
+      <main className="max-w-3xl mx-auto px-4 py-8">
         <div className="flex items-center justify-center h-40">
           <p className="text-gray-400">読み込み中...</p>
         </div>
@@ -32,7 +32,7 @@ export default function Home() {
   }
 
   return (
-    <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
+    <main className="max-w-3xl mx-auto px-3 py-4 space-y-4 lg:max-w-6xl lg:px-4 lg:py-6 lg:space-y-6">
       <IngredientManager
         ingredients={ingredients}
         onAdd={addIngredient}
@@ -40,7 +40,7 @@ export default function Home() {
         onClear={clearAll}
       />
 
-      <div className="flex flex-col lg:flex-row gap-6 items-start">
+      <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 items-start">
         <aside className="w-full lg:w-64 shrink-0">
           <FilterPanel
             filter={filter}
@@ -50,9 +50,9 @@ export default function Home() {
           />
         </aside>
 
-        <section className="flex-1 min-w-0">
+        <section className="flex-1 min-w-0 w-full">
           {myIngredientNames.length > 0 && (
-            <p className="text-sm text-gray-500 mb-4">
+            <p className="text-sm text-gray-500 mb-3">
               <span className="font-medium text-emerald-600">{myIngredientNames.length}種類</span>の食材をもとにソートしています
             </p>
           )}

@@ -13,13 +13,6 @@ const CATEGORY_BADGE: Record<Recipe['category'], { label: string; className: str
   chinese: { label: '中華', className: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
 };
 
-const FLAG_BADGES: { key: keyof Recipe['flags']; label: string }[] = [
-  { key: 'quick', label: '⚡時短' },
-  { key: 'leftover', label: '♻️余り食材' },
-  { key: 'mealprep', label: '📦作り置き' },
-  { key: 'single', label: '🍽️一人前' },
-];
-
 export default function RecipeCard({ recipe, myIngredients }: Props) {
   const matched = getMatchedIngredients(recipe, myIngredients);
   const missing = getMissingIngredients(recipe, myIngredients);
@@ -30,7 +23,7 @@ export default function RecipeCard({ recipe, myIngredients }: Props) {
 
   return (
     <Link href={`/recipes/${recipe.id}`} className="block group">
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 h-full hover:shadow-md hover:border-emerald-200 transition-all">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 h-full hover:shadow-md hover:border-emerald-200 transition-all active:scale-[0.99]">
         {/* ヘッダ */}
         <div className="flex items-start justify-between gap-2 mb-2">
           <h3 className="font-bold text-gray-800 group-hover:text-emerald-600 transition-colors leading-tight">
@@ -45,24 +38,15 @@ export default function RecipeCard({ recipe, myIngredients }: Props) {
         <p className="text-xs text-gray-500 mb-3 line-clamp-2">{recipe.description}</p>
 
         {/* メタ情報 */}
-        <div className="flex gap-3 text-xs text-gray-400 mb-3">
+        <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-400 mb-3">
           <span>⏱ {recipe.cookTime}分</span>
           <span>👤 {recipe.servings}人前</span>
-        </div>
-
-        {/* フラグバッジ */}
-        <div className="flex flex-wrap gap-1 mb-3">
-          {FLAG_BADGES.filter(({ key }) => recipe.flags[key]).map(({ key, label }) => (
-            <span key={key} className="text-xs px-2 py-0.5 bg-gray-50 text-gray-500 rounded-full border border-gray-100">
-              {label}
-            </span>
-          ))}
+          <span>🔥 {recipe.calories}kcal</span>
         </div>
 
         {/* 食材マッチ状況 */}
         {hasIngredients && (
           <div className="mt-auto pt-3 border-t border-gray-50">
-            {/* プログレスバー */}
             <div className="flex items-center gap-2 mb-1.5">
               <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
                 <div

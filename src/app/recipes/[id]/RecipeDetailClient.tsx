@@ -17,13 +17,6 @@ const CATEGORY_COLOR: Record<Recipe['category'], string> = {
   chinese: 'bg-yellow-50 text-yellow-700 border-yellow-200',
 };
 
-const FLAG_LABELS = [
-  { key: 'quick' as const, label: '⚡ 時短（20分以内）' },
-  { key: 'leftover' as const, label: '♻️ 余り食材活用' },
-  { key: 'mealprep' as const, label: '📦 作り置き向き' },
-  { key: 'single' as const, label: '🍽️ 一人前' },
-];
-
 interface Props {
   recipe: Recipe;
 }
@@ -35,19 +28,19 @@ export default function RecipeDetailClient({ recipe }: Props) {
   const missing = loaded ? getMissingIngredients(recipe, myIngredientNames) : [];
 
   return (
-    <main className="max-w-2xl mx-auto px-4 py-6">
+    <main className="max-w-2xl mx-auto px-3 py-4 lg:px-4 lg:py-6">
       {/* 戻るリンク */}
       <Link
         href="/"
-        className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-emerald-600 transition-colors mb-6"
+        className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-emerald-600 transition-colors mb-4 py-1"
       >
         ← レシピ一覧に戻る
       </Link>
 
       {/* タイトルエリア */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-4">
-        <div className="flex items-start gap-3 mb-3">
-          <h1 className="text-2xl font-bold text-gray-800 flex-1">{recipe.name}</h1>
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-3">
+        <div className="flex items-start gap-3 mb-2">
+          <h1 className="text-xl font-bold text-gray-800 flex-1 leading-tight">{recipe.name}</h1>
           <span className={`shrink-0 text-sm px-3 py-1 rounded-full border ${CATEGORY_COLOR[recipe.category]}`}>
             {CATEGORY_LABEL[recipe.category]}
           </span>
@@ -56,24 +49,16 @@ export default function RecipeDetailClient({ recipe }: Props) {
         <p className="text-gray-500 text-sm mb-4">{recipe.description}</p>
 
         {/* メタ情報 */}
-        <div className="flex gap-6 text-sm text-gray-500 mb-4">
-          <span>⏱ 調理時間：{recipe.cookTime}分</span>
+        <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-gray-500">
+          <span>⏱ {recipe.cookTime}分</span>
           <span>👤 {recipe.servings}人前</span>
-        </div>
-
-        {/* フラグ */}
-        <div className="flex flex-wrap gap-2">
-          {FLAG_LABELS.filter(({ key }) => recipe.flags[key]).map(({ key, label }) => (
-            <span key={key} className="text-xs px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full border border-emerald-200">
-              {label}
-            </span>
-          ))}
+          <span>🔥 {recipe.calories}kcal</span>
         </div>
       </div>
 
       {/* 食材チェック（登録食材がある場合のみ） */}
       {loaded && myIngredientNames.length > 0 && (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-4">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-3">
           <h2 className="font-bold text-gray-700 mb-3">食材チェック</h2>
           <div className="flex items-center gap-3 mb-3">
             <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
@@ -90,10 +75,10 @@ export default function RecipeDetailClient({ recipe }: Props) {
             <p className="text-sm font-medium text-emerald-600">✓ すべての食材がそろっています！</p>
           ) : (
             <div>
-              <p className="text-xs text-gray-400 mb-1">不足している食材：</p>
-              <div className="flex flex-wrap gap-1">
+              <p className="text-xs text-gray-400 mb-1.5">不足している食材：</p>
+              <div className="flex flex-wrap gap-1.5">
                 {missing.map((m) => (
-                  <span key={m} className="text-xs px-2 py-0.5 bg-red-50 text-red-500 rounded-full border border-red-100">
+                  <span key={m} className="text-xs px-2.5 py-1 bg-red-50 text-red-500 rounded-full border border-red-100">
                     {m}
                   </span>
                 ))}
@@ -104,14 +89,14 @@ export default function RecipeDetailClient({ recipe }: Props) {
       )}
 
       {/* 材料 */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-4">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-3">
         <h2 className="font-bold text-gray-700 mb-3">材料（{recipe.servings}人前）</h2>
         <ul className="space-y-2">
           {recipe.ingredients.map((ing) => {
             const isMatched = loaded && matched.includes(ing);
             return (
               <li key={ing} className="flex items-center gap-2 text-sm">
-                <span className={`w-4 h-4 rounded-full flex items-center justify-center text-xs shrink-0 ${
+                <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs shrink-0 ${
                   loaded && myIngredientNames.length > 0
                     ? isMatched
                       ? 'bg-emerald-100 text-emerald-600'
@@ -130,7 +115,7 @@ export default function RecipeDetailClient({ recipe }: Props) {
       </div>
 
       {/* 作り方 */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
         <h2 className="font-bold text-gray-700 mb-4">作り方</h2>
         <ol className="space-y-4">
           {recipe.steps.map((step, i) => (

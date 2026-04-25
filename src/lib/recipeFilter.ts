@@ -1,8 +1,8 @@
-import { Recipe, FilterFlag, CategoryFilter } from '@/types';
+import { Recipe, CookTimeFilter, CategoryFilter } from '@/types';
 
 export interface FilterState {
   category: CategoryFilter;
-  flags: FilterFlag[];
+  cookTime: CookTimeFilter;
   search: string;
 }
 
@@ -10,14 +10,11 @@ export function filterRecipes(
   recipes: Recipe[],
   myIngredients: string[],
   filter: FilterState,
-  matchMode: 'any' | 'all' = 'any',
 ): Recipe[] {
   return recipes
     .filter((recipe) => {
-      // カテゴリフィルター
       if (filter.category !== 'all' && recipe.category !== filter.category) return false;
 
-      // テキスト検索
       if (filter.search) {
         const q = filter.search.toLowerCase();
         const hit =
@@ -26,16 +23,13 @@ export function filterRecipes(
         if (!hit) return false;
       }
 
-      // フラグフィルター（選択したすべてのフラグを満たす）
-      if (filter.flags.length > 0) {
-        const pass = filter.flags.every((f) => recipe.flags[f]);
-        if (!pass) return false;
-      }
+      if (filter.cookTime === 'under15' && recipe.cookTime > 15) return false;
+      if (filter.cookTime === 'under30' && recipe.cookTime > 30) return false;
+      if (filter.cookTime === 'over30' && recipe.cookTime <= 30) return false;
 
       return true;
     })
     .sort((a, b) => {
-      // 手持ち食材にマッチする数が多い順にソート
       const scoreA = matchScore(a, myIngredients);
       const scoreB = matchScore(b, myIngredients);
       if (scoreB !== scoreA) return scoreB - scoreA;

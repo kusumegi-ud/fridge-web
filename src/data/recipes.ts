@@ -18,6 +18,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 20,
     servings: 2,
+    calories: 550,
     flags: { quick: true, leftover: false, mealprep: false, single: false },
   },
   {
@@ -35,6 +36,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 35,
     servings: 4,
+    calories: 350,
     flags: { quick: false, leftover: false, mealprep: true, single: false },
   },
   {
@@ -52,6 +54,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 15,
     servings: 2,
+    calories: 420,
     flags: { quick: true, leftover: false, mealprep: false, single: false },
   },
   {
@@ -69,6 +72,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 25,
     servings: 3,
+    calories: 450,
     flags: { quick: false, leftover: false, mealprep: true, single: false },
   },
   {
@@ -86,6 +90,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 10,
     servings: 2,
+    calories: 180,
     flags: { quick: true, leftover: true, mealprep: true, single: false },
   },
   {
@@ -103,6 +108,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 10,
     servings: 2,
+    calories: 280,
     flags: { quick: true, leftover: true, mealprep: false, single: false },
   },
   {
@@ -120,6 +126,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 20,
     servings: 4,
+    calories: 120,
     flags: { quick: false, leftover: false, mealprep: true, single: false },
   },
   {
@@ -135,6 +142,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 5,
     servings: 1,
+    calories: 80,
     flags: { quick: true, leftover: true, mealprep: false, single: true },
   },
   {
@@ -152,6 +160,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 10,
     servings: 2,
+    calories: 60,
     flags: { quick: true, leftover: true, mealprep: false, single: false },
   },
   {
@@ -167,6 +176,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 20,
     servings: 1,
+    calories: 200,
     flags: { quick: false, leftover: false, mealprep: false, single: true },
   },
 
@@ -187,6 +197,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 20,
     servings: 2,
+    calories: 650,
     flags: { quick: true, leftover: false, mealprep: false, single: false },
   },
   {
@@ -204,6 +215,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 45,
     servings: 4,
+    calories: 580,
     flags: { quick: false, leftover: false, mealprep: true, single: false },
   },
   {
@@ -220,6 +232,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 15,
     servings: 2,
+    calories: 320,
     flags: { quick: true, leftover: true, mealprep: false, single: false },
   },
   {
@@ -237,6 +250,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 30,
     servings: 3,
+    calories: 180,
     flags: { quick: false, leftover: true, mealprep: true, single: false },
   },
   {
@@ -254,6 +268,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 20,
     servings: 2,
+    calories: 350,
     flags: { quick: false, leftover: true, mealprep: false, single: false },
   },
   {
@@ -271,6 +286,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 35,
     servings: 3,
+    calories: 480,
     flags: { quick: false, leftover: false, mealprep: true, single: false },
   },
   {
@@ -287,6 +303,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 8,
     servings: 1,
+    calories: 240,
     flags: { quick: true, leftover: true, mealprep: false, single: true },
   },
   {
@@ -303,6 +320,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 35,
     servings: 4,
+    calories: 150,
     flags: { quick: false, leftover: true, mealprep: true, single: false },
   },
   {
@@ -320,6 +338,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 50,
     servings: 3,
+    calories: 520,
     flags: { quick: false, leftover: false, mealprep: true, single: false },
   },
   {
@@ -336,6 +355,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 10,
     servings: 1,
+    calories: 380,
     flags: { quick: true, leftover: true, mealprep: false, single: true },
   },
 
@@ -355,6 +375,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 10,
     servings: 1,
+    calories: 450,
     flags: { quick: true, leftover: true, mealprep: false, single: true },
   },
   {
@@ -372,6 +393,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 20,
     servings: 2,
+    calories: 320,
     flags: { quick: true, leftover: false, mealprep: false, single: false },
   },
   {
@@ -389,6 +411,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 40,
     servings: 3,
+    calories: 280,
     flags: { quick: false, leftover: false, mealprep: true, single: false },
   },
   {
@@ -405,6 +428,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 30,
     servings: 3,
+    calories: 420,
     flags: { quick: false, leftover: false, mealprep: false, single: false },
   },
   {
@@ -421,6 +445,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 20,
     servings: 2,
+    calories: 280,
     flags: { quick: true, leftover: false, mealprep: false, single: false },
   },
   {
@@ -438,6 +463,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 15,
     servings: 2,
+    calories: 350,
     flags: { quick: true, leftover: false, mealprep: false, single: false },
   },
   {
@@ -454,6 +480,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 20,
     servings: 2,
+    calories: 380,
     flags: { quick: true, leftover: false, mealprep: false, single: false },
   },
   {
@@ -471,6 +498,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 30,
     servings: 2,
+    calories: 260,
     flags: { quick: false, leftover: true, mealprep: true, single: false },
   },
   {
@@ -487,6 +515,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 8,
     servings: 2,
+    calories: 80,
     flags: { quick: true, leftover: true, mealprep: false, single: false },
   },
   {
@@ -504,6 +533,7 @@ export const recipes: Recipe[] = [
     ],
     cookTime: 40,
     servings: 4,
+    calories: 220,
     flags: { quick: false, leftover: false, mealprep: true, single: false },
   },
 ];
