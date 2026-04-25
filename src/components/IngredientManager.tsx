@@ -110,7 +110,46 @@ export default function IngredientManager({ ingredients, onAdd, onRemove, onClea
         )}
       </div>
 
-      {/* ── よく使う食材 ── */}
+      {/* ── 1. テキスト入力 + 音声入力 ── */}
+      <div className="mb-4">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKey}
+            placeholder="例：えび、ほうれん草..."
+            className="flex-1 min-w-0 px-3 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent"
+          />
+          <button
+            onClick={startVoiceInput}
+            title={isListening ? '録音中（タップで停止）' : '音声入力'}
+            className={`
+              shrink-0 w-11 h-11 flex items-center justify-center
+              rounded-xl border transition-colors
+              ${isListening
+                ? 'bg-red-500 border-red-500 text-white animate-pulse'
+                : 'bg-white border-gray-200 text-gray-500 active:bg-gray-50'
+              }
+            `}
+          >
+            🎤
+          </button>
+          <button
+            onClick={submit}
+            className="shrink-0 px-4 py-2.5 bg-emerald-500 active:bg-emerald-700 text-white text-sm font-medium rounded-xl transition-colors"
+          >
+            追加
+          </button>
+        </div>
+        {isListening && (
+          <p className="text-xs text-red-500 mt-2 animate-pulse">
+            🎤 聞き取り中… 食材名を話してください
+          </p>
+        )}
+      </div>
+
+      {/* ── 2. よく使う食材 ── */}
       <div className="mb-4">
         {/* セクションヘッダー */}
         <div className="flex items-start justify-between mb-2.5">
@@ -129,7 +168,6 @@ export default function IngredientManager({ ingredients, onAdd, onRemove, onClea
         {/* チップスクロールエリア */}
         <div className="relative">
           <div className="overflow-x-auto no-scrollbar">
-            {/* 2行グリッド（列方向オートフロー）で横スクロール */}
             <div
               className="grid gap-x-2 gap-y-1.5"
               style={{
@@ -175,44 +213,6 @@ export default function IngredientManager({ ingredients, onAdd, onRemove, onClea
           )}
         </div>
       </div>
-
-      {/* ── テキスト入力 + 音声入力 ── */}
-      <div className="flex gap-2 mb-3">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKey}
-          placeholder="例：えび、ほうれん草..."
-          className="flex-1 min-w-0 px-3 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent"
-        />
-        <button
-          onClick={startVoiceInput}
-          title={isListening ? '録音中（タップで停止）' : '音声入力'}
-          className={`
-            shrink-0 w-11 h-11 flex items-center justify-center
-            rounded-xl border transition-colors
-            ${isListening
-              ? 'bg-red-500 border-red-500 text-white animate-pulse'
-              : 'bg-white border-gray-200 text-gray-500 active:bg-gray-50'
-            }
-          `}
-        >
-          🎤
-        </button>
-        <button
-          onClick={submit}
-          className="shrink-0 px-4 py-2.5 bg-emerald-500 active:bg-emerald-700 text-white text-sm font-medium rounded-xl transition-colors"
-        >
-          追加
-        </button>
-      </div>
-
-      {isListening && (
-        <p className="text-xs text-red-500 mb-3 animate-pulse">
-          🎤 聞き取り中… 食材名を話してください
-        </p>
-      )}
 
       {/* ── 登録済み食材タグ ── */}
       {ingredients.length === 0 ? (
