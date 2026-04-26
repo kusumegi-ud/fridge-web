@@ -61,9 +61,9 @@ export default function Home() {
       {hasIngredients && !showRecipes && (
         <button
           onClick={() => setShowRecipes(true)}
-          className="w-full py-4 bg-emerald-500 active:bg-emerald-700 text-white font-bold text-base rounded-2xl transition-colors shadow-sm"
+          className="w-full py-4 bg-[#16A34A] active:bg-green-800 text-white font-bold text-base rounded-2xl transition-colors"
         >
-          🔍 レシピを検索する
+          レシピを検索する
         </button>
       )}
 
@@ -80,7 +80,7 @@ export default function Home() {
           </aside>
           <section className="flex-1 min-w-0 w-full">
             <p className="text-sm text-gray-500 mb-3">
-              <span className="font-medium text-emerald-600">{myIngredientNames.length}種類</span>の食材をもとにソートしています
+              <span className="font-medium text-[#16A34A]">{myIngredientNames.length}種類</span>の食材をもとにソートしています
             </p>
             <RecipeList recipes={filtered} myIngredients={myIngredientNames} />
           </section>
