@@ -22,17 +22,19 @@ interface Props {
 }
 
 export default function RecipeDetailClient({ recipe }: Props) {
-  const { ingredients, loaded } = useIngredients();
+  const { ingredients, addIngredient, loaded } = useIngredients();
   const myIngredientNames = ingredients.map((i) => i.name);
   const matched = loaded ? getMatchedIngredients(recipe, myIngredientNames) : [];
   const missing = loaded ? getMissingIngredients(recipe, myIngredientNames) : [];
+
+  const addedNames = new Set(myIngredientNames);
 
   return (
     <main className="max-w-2xl mx-auto px-3 py-4 lg:px-4 lg:py-6">
       {/* 戻るリンク */}
       <Link
         href="/"
-        className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-emerald-600 transition-colors mb-4 py-1"
+        className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-[#16A34A] transition-colors mb-4 py-1"
       >
         ← レシピ一覧に戻る
       </Link>
@@ -52,7 +54,7 @@ export default function RecipeDetailClient({ recipe }: Props) {
         <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-gray-500">
           <span>⏱ {recipe.cookTime}分</span>
           <span>👤 {recipe.servings}人前</span>
-          <span>🔥 {recipe.calories}kcal</span>
+          <span>🔥 {recipe.calories}kcal / 1人前</span>
         </div>
       </div>
 
@@ -63,26 +65,39 @@ export default function RecipeDetailClient({ recipe }: Props) {
           <div className="flex items-center gap-3 mb-3">
             <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
               <div
-                className="h-full bg-emerald-400 rounded-full transition-all"
+                className="h-full bg-[#16A34A] rounded-full transition-all"
                 style={{ width: `${(matched.length / recipe.ingredients.length) * 100}%` }}
               />
             </div>
-            <span className="text-sm font-medium text-emerald-600">
+            <span className="text-sm font-medium text-[#16A34A]">
               {matched.length} / {recipe.ingredients.length}
             </span>
           </div>
           {missing.length === 0 ? (
-            <p className="text-sm font-medium text-emerald-600">✓ すべての食材がそろっています！</p>
+            <p className="text-sm font-medium text-[#16A34A]">✓ すべての食材がそろっています！</p>
           ) : (
             <div>
               <p className="text-xs text-gray-400 mb-1.5">不足している食材：</p>
               <div className="flex flex-wrap gap-1.5">
-                {missing.map((m) => (
-                  <span key={m} className="text-xs px-2.5 py-1 bg-red-50 text-red-500 rounded-full border border-red-100">
-                    {m}
-                  </span>
-                ))}
+                {missing.map((m) => {
+                  const alreadyAdded = addedNames.has(m);
+                  return (
+                    <button
+                      key={m}
+                      onClick={() => { if (!alreadyAdded) addIngredient(m); }}
+                      disabled={alreadyAdded}
+                      className={`inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                        alreadyAdded
+                          ? 'border-[#16A34A] text-[#16A34A] bg-white cursor-default'
+                          : 'border-[#E5E5E5] text-gray-600 bg-white hover:border-[#16A34A] hover:text-[#16A34A] active:bg-gray-50'
+                      }`}
+                    >
+                      {alreadyAdded ? '✓ ' : '＋ '}{m}
+                    </button>
+                  );
+                })}
               </div>
+              <p className="text-xs text-gray-400 mt-2">タップすると冷蔵庫リストに追加できます</p>
             </div>
           )}
         </div>
@@ -99,7 +114,7 @@ export default function RecipeDetailClient({ recipe }: Props) {
                 <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs shrink-0 ${
                   loaded && myIngredientNames.length > 0
                     ? isMatched
-                      ? 'bg-emerald-100 text-emerald-600'
+                      ? 'bg-green-100 text-[#16A34A]'
                       : 'bg-gray-100 text-gray-400'
                     : 'bg-gray-100 text-gray-400'
                 }`}>
@@ -120,7 +135,7 @@ export default function RecipeDetailClient({ recipe }: Props) {
         <ol className="space-y-4">
           {recipe.steps.map((step, i) => (
             <li key={i} className="flex gap-3">
-              <span className="shrink-0 w-6 h-6 bg-emerald-500 text-white text-xs font-bold rounded-full flex items-center justify-center mt-0.5">
+              <span className="shrink-0 w-6 h-6 bg-[#16A34A] text-white text-xs font-bold rounded-full flex items-center justify-center mt-0.5">
                 {i + 1}
               </span>
               <p className="text-sm text-gray-700 leading-relaxed">{step}</p>

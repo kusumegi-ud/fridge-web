@@ -13,7 +13,7 @@ export default function Footer() {
 
   return (
     <footer
-      className="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-100"
+      className="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       <div className="flex h-14">
