@@ -23,7 +23,6 @@ export default function Home() {
   const hasIngredients = myIngredientNames.length > 0;
   const filtered = filterRecipes(recipes, myIngredientNames, filter);
 
-  // 食材が0件になったらレシピ一覧を閉じる
   useEffect(() => {
     if (!hasIngredients) setShowRecipes(false);
   }, [hasIngredients]);
@@ -32,14 +31,14 @@ export default function Home() {
     return (
       <main className="max-w-3xl mx-auto px-4 py-8">
         <div className="flex items-center justify-center h-40">
-          <p className="text-gray-400">読み込み中...</p>
+          <p className="text-[14px] text-[#6B7280]">読み込み中...</p>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="max-w-3xl mx-auto px-3 py-4 space-y-4 lg:max-w-6xl lg:px-4 lg:py-6 lg:space-y-6">
+    <main className="max-w-3xl mx-auto px-4 py-6 space-y-6 lg:max-w-6xl lg:py-8">
       <IngredientManager
         ingredients={ingredients}
         onAdd={addIngredient}
@@ -50,10 +49,8 @@ export default function Home() {
       {/* 食材なし：空状態 */}
       {!hasIngredients && (
         <div className="flex flex-col items-center justify-center py-14 text-center">
-          <span className="text-5xl mb-4">🧊</span>
-          <p className="text-gray-600 font-medium text-base">冷蔵庫に食材を追加して</p>
-          <p className="text-gray-600 font-medium text-base">レシピを探しましょう</p>
-          <p className="text-sm text-gray-400 mt-2">登録した食材でつくれるレシピが見つかります</p>
+          <p className="text-[16px] font-semibold text-[#111827] mb-1">食材を登録してください</p>
+          <p className="text-[14px] text-[#6B7280]">登録した食材でつくれるレシピが見つかります</p>
         </div>
       )}
 
@@ -61,7 +58,7 @@ export default function Home() {
       {hasIngredients && !showRecipes && (
         <button
           onClick={() => setShowRecipes(true)}
-          className="w-full py-4 bg-[#16A34A] active:bg-green-800 text-white font-bold text-base rounded-2xl transition-colors"
+          className="w-full h-12 bg-[#16A34A] active:bg-green-800 text-white text-[15px] font-semibold rounded-full transition-colors"
         >
           レシピを検索する
         </button>
@@ -69,7 +66,7 @@ export default function Home() {
 
       {/* 食材あり・検索後：フィルター + レシピ一覧 */}
       {hasIngredients && showRecipes && (
-        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 items-start">
+        <div className="flex flex-col lg:flex-row gap-6 items-start">
           <aside className="w-full lg:w-64 shrink-0">
             <FilterPanel
               filter={filter}
@@ -79,8 +76,8 @@ export default function Home() {
             />
           </aside>
           <section className="flex-1 min-w-0 w-full">
-            <p className="text-sm text-gray-500 mb-3">
-              <span className="font-medium text-[#16A34A]">{myIngredientNames.length}種類</span>の食材をもとにソートしています
+            <p className="text-[14px] text-[#6B7280] mb-4">
+              <span className="font-medium text-[#111827]">{myIngredientNames.length}種類</span>の食材をもとにソートしています
             </p>
             <RecipeList recipes={filtered} myIngredients={myIngredientNames} />
           </section>

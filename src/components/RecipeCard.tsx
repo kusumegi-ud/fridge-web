@@ -13,9 +13,9 @@ interface Props {
 }
 
 const CATEGORY_BADGE: Record<Recipe['category'], { label: string; className: string }> = {
-  japanese: { label: '和食', className: 'bg-red-50 text-red-600 border-red-200' },
-  western: { label: '洋食', className: 'bg-blue-50 text-blue-600 border-blue-200' },
-  chinese: { label: '中華', className: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
+  japanese: { label: '和食', className: 'border-[#E5E5E5] text-[#6B7280]' },
+  western:  { label: '洋食', className: 'border-[#E5E5E5] text-[#6B7280]' },
+  chinese:  { label: '中華', className: 'border-[#E5E5E5] text-[#6B7280]' },
 };
 
 const MAX_CHIPS = 3;
@@ -43,59 +43,59 @@ export default function RecipeCard({ recipe, myIngredients }: Props) {
 
   return (
     <>
-      <Link href={`/recipes/${recipe.id}`} className="block group">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 h-full hover:shadow-md hover:border-emerald-200 transition-all active:scale-[0.99]">
+      <Link href={`/recipes/${recipe.id}`} className="block">
+        <div className="bg-white rounded-2xl border border-[#E5E5E5] p-4 h-full transition-colors active:bg-[#FAFAFA]">
           {/* ヘッダ */}
           <div className="flex items-start justify-between gap-2 mb-2">
-            <h3 className="font-bold text-gray-800 group-hover:text-emerald-600 transition-colors leading-tight">
+            <h3 className="text-[15px] font-semibold text-[#111827] leading-tight">
               {recipe.name}
             </h3>
-            <span className={`shrink-0 text-xs px-2 py-0.5 rounded-full border ${catClass}`}>
+            <span className={`shrink-0 text-[12px] h-6 px-3 rounded-full border flex items-center ${catClass}`}>
               {catLabel}
             </span>
           </div>
 
           {/* 説明文 */}
-          <p className="text-xs text-gray-500 mb-3 line-clamp-2">{recipe.description}</p>
+          <p className="text-[13px] text-[#6B7280] mb-3 line-clamp-2">{recipe.description}</p>
 
           {/* メタ情報 */}
-          <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-400 mb-3">
-            <span>⏱ {recipe.cookTime}分</span>
-            <span>👤 {recipe.servings}人前</span>
-            <span>🔥 {recipe.calories}kcal</span>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-[#6B7280] mb-3">
+            <span>{recipe.cookTime}分</span>
+            <span>{recipe.servings}人前</span>
+            <span>{recipe.calories}kcal</span>
           </div>
 
           {/* 食材マッチ状況 */}
           {hasIngredients && (
-            <div className="mt-auto pt-3 border-t border-gray-50">
+            <div className="pt-3 border-t border-[#F3F4F6]">
               {/* プログレスバー */}
               <div className="flex items-center gap-2 mb-2">
-                <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div className="flex-1 h-1 bg-[#F3F4F6] rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-emerald-400 rounded-full transition-all"
+                    className="h-full bg-[#16A34A] rounded-full transition-all"
                     style={{ width: `${matchRatio * 100}%` }}
                   />
                 </div>
-                <span className="text-xs font-medium text-emerald-600 shrink-0">
+                <span className="text-[12px] font-medium text-[#6B7280] shrink-0">
                   {matched.length}/{recipe.ingredients.length}
                 </span>
               </div>
 
               {/* 不足食材チップ */}
               {missing.length > 0 ? (
-                <div className="flex flex-wrap items-center gap-1.5">
+                <div className="flex flex-wrap items-center gap-2">
                   {visibleMissing.map((m) => {
                     const inList = shoppingList.includes(m);
                     return (
                       <span
                         key={m}
-                        className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full border ${
+                        className={`inline-flex items-center gap-1 text-[12px] font-medium h-7 px-3 rounded-full border ${
                           inList
-                            ? 'bg-emerald-50 text-emerald-600 border-emerald-200'
-                            : 'bg-gray-50 text-gray-500 border-gray-200'
+                            ? 'bg-white border-[#16A34A] text-[#16A34A]'
+                            : 'bg-white border-[#E5E5E5] text-[#6B7280]'
                         }`}
                       >
-                        {inList && <span className="text-[10px] font-bold">✓</span>}
+                        {inList && <span className="text-[10px]">✓</span>}
                         {m}
                       </span>
                     );
@@ -103,14 +103,14 @@ export default function RecipeCard({ recipe, myIngredients }: Props) {
                   {extraCount > 0 && (
                     <button
                       onClick={openSheet}
-                      className="text-xs text-gray-400 border border-gray-200 rounded-full px-2.5 py-0.5 active:bg-gray-50 shrink-0 hover:border-emerald-300 hover:text-emerald-500 transition-colors"
+                      className="text-[12px] font-medium h-7 px-3 bg-white border border-[#E5E5E5] text-[#6B7280] rounded-full transition-colors active:border-[#D1D5DB]"
                     >
-                      他{extraCount}品 ▼
+                      他{extraCount}品
                     </button>
                   )}
                 </div>
               ) : (
-                <p className="text-xs font-medium text-emerald-600">✓ すべての食材がそろっています</p>
+                <p className="text-[13px] font-medium text-[#16A34A]">✓ すべての食材がそろっています</p>
               )}
             </div>
           )}
@@ -129,21 +129,21 @@ export default function RecipeCard({ recipe, myIngredients }: Props) {
             return (
               <li
                 key={m}
-                className="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0"
+                className="flex items-center justify-between py-2.5 border-b border-[#F3F4F6] last:border-0"
               >
                 <div className="flex items-center gap-2">
-                  {inList && <span className="text-emerald-500 text-sm font-bold">✓</span>}
-                  <span className={`text-sm ${inList ? 'text-emerald-600' : 'text-gray-700'}`}>
+                  {inList && <span className="text-[#16A34A] text-[13px] font-bold">✓</span>}
+                  <span className={`text-[14px] ${inList ? 'text-[#16A34A]' : 'text-[#111827]'}`}>
                     {m}
                   </span>
                 </div>
                 <button
                   onClick={() => { if (!inList) addItem(m); }}
                   disabled={inList}
-                  className={`text-xs px-3 py-1.5 rounded-full transition-colors shrink-0 ml-3 ${
+                  className={`text-[13px] font-medium h-8 px-4 rounded-full transition-colors shrink-0 ml-3 border ${
                     inList
-                      ? 'bg-gray-100 text-gray-400 cursor-default'
-                      : 'bg-emerald-500 text-white active:bg-emerald-700'
+                      ? 'border-[#E5E5E5] text-[#9CA3AF] cursor-default'
+                      : 'border-[#16A34A] text-[#16A34A] active:bg-green-50'
                   }`}
                 >
                   {inList ? '追加済み' : '追加'}
@@ -156,7 +156,7 @@ export default function RecipeCard({ recipe, myIngredients }: Props) {
         {notAddedItems.length > 0 && (
           <button
             onClick={() => addItems(notAddedItems)}
-            className="w-full py-3.5 bg-emerald-500 active:bg-emerald-700 text-white font-bold text-sm rounded-xl transition-colors"
+            className="w-full h-12 bg-[#16A34A] active:bg-green-800 text-white text-[15px] font-semibold rounded-full transition-colors"
           >
             すべてまとめて追加（{notAddedItems.length}品）
           </button>
