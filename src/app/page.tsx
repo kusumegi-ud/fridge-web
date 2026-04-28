@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Icon } from '@iconify/react';
 import { useIngredients } from '@/hooks/useIngredients';
 import { filterRecipes, FilterState } from '@/lib/recipeFilter';
@@ -20,6 +20,13 @@ const CATEGORIES = [
 
 const DEFAULT_FILTER: FilterState = { category: 'all', cookTime: 'any', search: '' };
 
+const COMMON_INGREDIENTS = [
+  '卵', '玉ねぎ', '鶏もも肉', '豆腐', 'にんじん',
+  'じゃがいも', 'キャベツ', '豚バラ肉', '長ねぎ', '生姜',
+  'にんにく', 'ご飯', '豚ひき肉', '牛乳', 'バター',
+  'ベーコン', 'もやし', '鶏むね肉', '豆板醤', 'ごま油',
+] as const;
+
 /** レシピ全品から食材名を重複なく抽出してソート */
 const RECIPE_CANDIDATES = Array.from(
   new Set(recipes.flatMap((r) => r.ingredients))
@@ -30,6 +37,12 @@ export default function Home() {
   const [filter, setFilter] = useState<FilterState>(DEFAULT_FILTER);
   const [showRecipes, setShowRecipes] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [showCommon, setShowCommon] = useState(true);
+  const commonScrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollCommon = (dir: 'left' | 'right') => {
+    commonScrollRef.current?.scrollBy({ left: dir === 'right' ? 160 : -160, behavior: 'smooth' });
+  };
 
   const myIngredientNames = ingredients.map((i) => i.name);
   const addedNames = new Set(myIngredientNames);
@@ -80,32 +93,10 @@ export default function Home() {
 
       <main className="max-w-md mx-auto px-4 py-5 space-y-6">
 
-        {/* ─── 冷蔵庫の食材 ─── */}
-        <section>
-          <div className="flex items-center gap-2 mb-3">
-            <h2 className="text-[16px] font-semibold text-[#111827]">冷蔵庫の食材</h2>
-            <span className="text-[12px] font-medium text-[#16A34A] bg-green-50 px-2 py-0.5 rounded-full border border-green-100">
-              {ingredients.length}品
-            </span>
-          </div>
-
-          <div className="grid grid-cols-5 gap-2">
-            {CATEGORIES.map((cat) => (
-              <div
-                key={cat.key}
-                className="flex flex-col items-center gap-1.5 py-3 px-1 border border-[#E5E7EB] rounded-xl bg-white"
-              >
-                {cat.icon ? (
-                  <Icon icon={cat.icon} width={36} height={36} />
-                ) : (
-                  <span className="w-9 h-9 flex items-center justify-center text-[#9CA3AF] text-[20px] font-bold leading-none tracking-widest">···</span>
-                )}
-                <span className="text-[10px] text-[#374151] text-center leading-tight whitespace-pre-line">{cat.label}</span>
-                <span className="text-[14px] font-semibold text-[#111827]">{categoryCounts[cat.key] ?? 0}</span>
-              </div>
-            ))}
-          </div>
-        </section>
+        {/* ─── キャッチコピー ─── */}
+        <div className="pt-1">
+          <p className="text-[20px] font-bold text-[#111827]">冷蔵庫の食材からレシピを検索しよう</p>
+        </div>
 
         {/* ─── 食材追加フィールド ─── */}
         <AddIngredientInput
@@ -145,25 +136,105 @@ export default function Home() {
           )}
         </section>
 
-        {/* ─── 検索 CTA ─── */}
-        <section className="bg-[#F9FAFB] rounded-2xl p-6 flex flex-col items-center gap-3 border border-[#F3F4F6]">
-          <div className="w-12 h-12 bg-white rounded-full border border-[#E5E7EB] flex items-center justify-center">
-            <Icon icon="mdi:magnify" width={28} height={28} className="text-[#16A34A]" />
+        {/* ─── 冷蔵庫の食材 ─── */}
+        <section>
+          <div className="flex items-center gap-2 mb-3">
+            <h2 className="text-[16px] font-semibold text-[#111827]">冷蔵庫の食材</h2>
+            <span className="text-[12px] font-medium text-[#16A34A] bg-green-50 px-2 py-0.5 rounded-full border border-green-100">
+              {ingredients.length}品
+            </span>
           </div>
 
-          <p className="text-[18px] font-bold text-[#111827] leading-snug text-center">
-            冷蔵庫の食材から<br />レシピを検索しよう
-          </p>
+          <div className="grid grid-cols-5 gap-2">
+            {CATEGORIES.map((cat) => (
+              <div
+                key={cat.key}
+                className="flex flex-col items-center gap-1.5 py-3 px-1 border border-[#E5E7EB] rounded-xl bg-white"
+              >
+                {cat.icon ? (
+                  <Icon icon={cat.icon} width={36} height={36} />
+                ) : (
+                  <span className="w-9 h-9 flex items-center justify-center text-[#9CA3AF] text-[20px] font-bold leading-none tracking-widest">···</span>
+                )}
+                <span className="text-[10px] text-[#374151] text-center leading-tight whitespace-pre-line">{cat.label}</span>
+                <span className="text-[14px] font-semibold text-[#111827]">{categoryCounts[cat.key] ?? 0}</span>
+              </div>
+            ))}
+          </div>
+        </section>
 
-          <p className="text-[13px] text-[#6B7280] text-center leading-relaxed">
-            下のボタンからあなたにぴったりの<br />レシピを探せます
-          </p>
+        {/* ─── よく使う食材 ─── */}
+        <section>
+          <button
+            onClick={() => setShowCommon((v) => !v)}
+            className="w-full flex items-center justify-between mb-3"
+          >
+            <h2 className="text-[16px] font-semibold text-[#111827]">よく使う食材</h2>
+            <Icon
+              icon={showCommon ? 'mdi:minus' : 'mdi:plus'}
+              width={20}
+              height={20}
+              className="text-[#9CA3AF]"
+            />
+          </button>
+          {showCommon && (
+            <>
+              <div
+                ref={commonScrollRef}
+                className="grid gap-2 overflow-x-auto pb-1 no-scrollbar touch-pan-x"
+                style={{ gridTemplateRows: 'repeat(2, auto)', gridAutoFlow: 'column', gridAutoColumns: 'max-content' }}
+              >
+                {COMMON_INGREDIENTS.map((name) => {
+                  const isAdded = addedNames.has(name);
+                  return (
+                    <button
+                      key={name}
+                      onClick={() => {
+                        if (isAdded) {
+                          const ing = ingredients.find((i) => i.name === name);
+                          if (ing) removeIngredient(ing.id);
+                        } else {
+                          addIngredient(name);
+                        }
+                      }}
+                      className={`inline-flex items-center gap-1.5 h-9 px-3 rounded-full border text-[13px] font-medium transition-colors ${
+                        isAdded
+                          ? 'bg-white border-[#16A34A] text-[#16A34A]'
+                          : 'bg-white border-[#E5E7EB] text-[#111827] active:border-[#D1D5DB]'
+                      }`}
+                    >
+                      <IngredientIcon name={name} size={16} />
+                      {name}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="flex justify-center gap-2 mt-3">
+                <button
+                  onClick={() => scrollCommon('left')}
+                  className="w-8 h-8 rounded-full border border-[#E5E7EB] bg-white flex items-center justify-center text-[#6B7280] active:bg-gray-50"
+                  aria-label="左へスクロール"
+                >
+                  <Icon icon="mdi:chevron-left" width={18} height={18} />
+                </button>
+                <button
+                  onClick={() => scrollCommon('right')}
+                  className="w-8 h-8 rounded-full border border-[#E5E7EB] bg-white flex items-center justify-center text-[#6B7280] active:bg-gray-50"
+                  aria-label="右へスクロール"
+                >
+                  <Icon icon="mdi:chevron-right" width={18} height={18} />
+                </button>
+              </div>
+            </>
+          )}
+        </section>
 
+        {/* ─── 検索 CTA ─── */}
+        <section>
           <button
             onClick={() => setShowRecipes(true)}
-            className="w-full h-12 bg-[#16A34A] active:bg-green-800 text-white text-[15px] font-semibold rounded-full flex items-center justify-center gap-2 mt-1 transition-colors"
+            className="w-full h-12 bg-[#16A34A] active:bg-green-800 text-white text-[15px] font-semibold rounded-full flex items-center justify-center transition-colors"
           >
-            <Icon icon="mdi:magnify" width={20} height={20} />
             レシピを検索する
           </button>
         </section>
