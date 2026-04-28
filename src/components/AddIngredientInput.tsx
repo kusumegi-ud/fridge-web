@@ -67,7 +67,7 @@ export default function AddIngredientInput({ candidates, addedNames, onAdd, onDu
   };
 
   return (
-    <div className="border border-[#E5E7EB] rounded-2xl p-3 bg-white">
+    <div>
       <div className="relative flex gap-2">
         <div className="relative flex-1">
           <input
