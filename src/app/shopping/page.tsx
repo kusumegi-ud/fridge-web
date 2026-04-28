@@ -59,7 +59,7 @@ function ItemRow({
 }
 
 export default function ShoppingPage() {
-  const { items, addManualItem, removeItem, toggleChecked, clearAll } = useShoppingList();
+  const { items, addManualItem, removeItem, toggleChecked } = useShoppingList();
   const [activeTab, setActiveTab] = useState<Tab>('all');
   const [showAddInput, setShowAddInput] = useState(false);
   const [addInput, setAddInput] = useState('');
@@ -93,21 +93,8 @@ export default function ShoppingPage() {
     <div className="min-h-screen bg-white">
       {/* ─── ヘッダー ─── */}
       <header className="sticky top-0 z-50 bg-white border-b border-[#E5E7EB]">
-        <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
+        <div className="max-w-md mx-auto px-4 h-14 flex items-center">
           <h1 className="text-[18px] font-semibold text-[#111827]">買い物リスト</h1>
-          <div className="flex items-center gap-3">
-            {items.length > 0 && (
-              <button
-                onClick={clearAll}
-                className="text-[14px] font-medium text-[#16A34A]"
-              >
-                編集
-              </button>
-            )}
-            <button className="text-[#374151]" aria-label="メニュー">
-              <Icon icon="mdi:dots-horizontal" width={22} height={22} />
-            </button>
-          </div>
         </div>
       </header>
 

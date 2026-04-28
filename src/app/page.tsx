@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, KeyboardEvent } from 'react';
+import { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { useIngredients } from '@/hooks/useIngredients';
 import { filterRecipes, FilterState } from '@/lib/recipeFilter';
@@ -8,6 +8,7 @@ import { recipes } from '@/data/recipes';
 import FilterPanel from '@/components/FilterPanel';
 import RecipeList from '@/components/RecipeList';
 import IngredientIcon, { getIngredientCategory } from '@/components/icons/IngredientIcon';
+import AddIngredientInput from '@/components/AddIngredientInput';
 
 const CATEGORIES = [
   { key: 'veggie',   label: '野菜',            icon: 'fluent-emoji-flat:leafy-green' },
@@ -19,32 +20,38 @@ const CATEGORIES = [
 
 const DEFAULT_FILTER: FilterState = { category: 'all', cookTime: 'any', search: '' };
 
+/** レシピ全品から食材名を重複なく抽出してソート */
+const RECIPE_CANDIDATES = Array.from(
+  new Set(recipes.flatMap((r) => r.ingredients))
+).sort();
+
 export default function Home() {
   const { ingredients, addIngredient, removeIngredient, loaded } = useIngredients();
   const [filter, setFilter] = useState<FilterState>(DEFAULT_FILTER);
   const [showRecipes, setShowRecipes] = useState(false);
-  const [input, setInput] = useState('');
-  const [showInput, setShowInput] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
 
   const myIngredientNames = ingredients.map((i) => i.name);
+  const addedNames = new Set(myIngredientNames);
   const filtered = filterRecipes(recipes, myIngredientNames, filter);
 
   const categoryCounts = Object.fromEntries(
     CATEGORIES.map((c) => [c.key, ingredients.filter((i) => getIngredientCategory(i.name) === c.key).length])
   );
 
-  const handleAdd = () => {
-    const trimmed = input.trim();
-    if (!trimmed) return;
-    addIngredient(trimmed);
-    setInput('');
-    setShowInput(false);
+  const handleAdd = (name: string) => {
+    addIngredient(name);
   };
 
-  const handleKey = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') handleAdd();
-    if (e.key === 'Escape') { setShowInput(false); setInput(''); }
+  const showToast = (name: string) => {
+    setToast(`「${name}」は登録済みです`);
   };
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
 
   if (!loaded) {
     return (
@@ -56,14 +63,18 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white">
+
+      {/* ─── トースト通知 ─── */}
+      {toast && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-[#111827] text-white text-[13px] font-medium px-4 py-2 rounded-full shadow-lg pointer-events-none whitespace-nowrap">
+          {toast}
+        </div>
+      )}
+
       {/* ─── ヘッダー ─── */}
-      <header className="sticky top-0 z-50 bg-white border-b border-[#E5E7EB]">
-        <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
+      <header className="sticky top-0 z-40 bg-white border-b border-[#E5E7EB]">
+        <div className="max-w-md mx-auto px-4 h-14 flex items-center">
           <h1 className="text-[18px] font-semibold text-[#111827]">フリッジレシピ</h1>
-          <button className="relative p-1.5" aria-label="通知">
-            <Icon icon="mdi:bell-outline" width={24} height={24} className="text-[#374151]" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#16A34A] rounded-full" />
-          </button>
         </div>
       </header>
 
@@ -71,14 +82,11 @@ export default function Home() {
 
         {/* ─── 冷蔵庫の食材 ─── */}
         <section>
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <h2 className="text-[16px] font-semibold text-[#111827]">冷蔵庫の食材</h2>
-              <span className="text-[12px] font-medium text-[#16A34A] bg-green-50 px-2 py-0.5 rounded-full border border-green-100">
-                {ingredients.length}品
-              </span>
-            </div>
-            <button className="text-[14px] font-medium text-[#16A34A]">編集</button>
+          <div className="flex items-center gap-2 mb-3">
+            <h2 className="text-[16px] font-semibold text-[#111827]">冷蔵庫の食材</h2>
+            <span className="text-[12px] font-medium text-[#16A34A] bg-green-50 px-2 py-0.5 rounded-full border border-green-100">
+              {ingredients.length}品
+            </span>
           </div>
 
           <div className="grid grid-cols-5 gap-2">
@@ -99,59 +107,42 @@ export default function Home() {
           </div>
         </section>
 
+        {/* ─── 食材追加フィールド ─── */}
+        <AddIngredientInput
+          candidates={RECIPE_CANDIDATES}
+          addedNames={addedNames}
+          onAdd={handleAdd}
+          onDuplicate={showToast}
+        />
+
         {/* ─── 登録している食材 ─── */}
         <section>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-[16px] font-semibold text-[#111827]">登録している食材</h2>
-            <button className="text-[14px] font-medium text-[#16A34A]">すべて見る &gt;</button>
-          </div>
+          <h2 className="text-[16px] font-semibold text-[#111827] mb-3">登録している食材</h2>
 
-          <div className="flex flex-wrap gap-2">
-            {ingredients.map((ing) => (
-              <span
-                key={ing.id}
-                className="inline-flex items-center gap-1.5 h-9 px-3 bg-white border border-[#E5E7EB] rounded-full text-[13px] text-[#111827]"
-              >
-                <IngredientIcon name={ing.name} size={18} />
-                {ing.name}
-                <button
-                  onClick={() => removeIngredient(ing.id)}
-                  className="text-[#9CA3AF] text-[15px] ml-0.5 leading-none hover:text-[#6B7280]"
-                  aria-label={`${ing.name}を削除`}
+          {ingredients.length === 0 ? (
+            <p className="text-[14px] text-[#9CA3AF] py-1">
+              上のフィールドから食材を追加してください
+            </p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {ingredients.map((ing) => (
+                <span
+                  key={ing.id}
+                  className="inline-flex items-center gap-1.5 h-9 px-3 bg-white border border-[#E5E7EB] rounded-full text-[13px] text-[#111827]"
                 >
-                  ×
-                </button>
-              </span>
-            ))}
-
-            {showInput ? (
-              <div className="inline-flex items-center gap-1.5 h-9 px-3 bg-white border border-[#16A34A] rounded-full">
-                <input
-                  autoFocus
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={handleKey}
-                  placeholder="食材名..."
-                  className="text-[13px] outline-none w-24 bg-transparent"
-                />
-                <button
-                  onClick={handleAdd}
-                  className="text-[#16A34A] text-[13px] font-medium"
-                >
-                  追加
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => setShowInput(true)}
-                className="inline-flex items-center gap-1.5 h-9 px-3 bg-white border border-[#E5E7EB] rounded-full text-[13px] text-[#6B7280] hover:border-[#16A34A] hover:text-[#16A34A] transition-colors"
-              >
-                <span className="text-[#16A34A] text-[16px] leading-none font-medium">＋</span>
-                食材を追加する
-              </button>
-            )}
-          </div>
+                  <IngredientIcon name={ing.name} size={18} />
+                  {ing.name}
+                  <button
+                    onClick={() => removeIngredient(ing.id)}
+                    className="text-[#9CA3AF] text-[15px] ml-0.5 leading-none hover:text-[#6B7280]"
+                    aria-label={`${ing.name}を削除`}
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
         </section>
 
         {/* ─── 検索 CTA ─── */}
@@ -160,11 +151,9 @@ export default function Home() {
             <Icon icon="mdi:magnify" width={28} height={28} className="text-[#16A34A]" />
           </div>
 
-          <div className="text-center">
-            <p className="text-[18px] font-bold text-[#111827] leading-snug">
-              冷蔵庫の食材から<br />レシピを検索しよう
-            </p>
-          </div>
+          <p className="text-[18px] font-bold text-[#111827] leading-snug text-center">
+            冷蔵庫の食材から<br />レシピを検索しよう
+          </p>
 
           <p className="text-[13px] text-[#6B7280] text-center leading-relaxed">
             下のボタンからあなたにぴったりの<br />レシピを探せます
