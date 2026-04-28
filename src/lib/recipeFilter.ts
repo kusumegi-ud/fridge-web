@@ -11,6 +11,7 @@ export function filterRecipes(
   myIngredients: string[],
   filter: FilterState,
 ): Recipe[] {
+  if (myIngredients.length === 0) return [];
   return recipes
     .filter((recipe) => {
       if (filter.category !== 'all' && recipe.category !== filter.category) return false;
