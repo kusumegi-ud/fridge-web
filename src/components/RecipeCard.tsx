@@ -22,7 +22,7 @@ const MAX_CHIPS = 3;
 
 export default function RecipeCard({ recipe, myIngredients }: Props) {
   const [sheetOpen, setSheetOpen] = useState(false);
-  const { items: shoppingList, addItem, addItems } = useShoppingList();
+  const { hasItem, addItem, addItems } = useShoppingList();
 
   const matched = getMatchedIngredients(recipe, myIngredients);
   const missing = getMissingIngredients(recipe, myIngredients);
@@ -31,7 +31,7 @@ export default function RecipeCard({ recipe, myIngredients }: Props) {
 
   const visibleMissing = missing.slice(0, MAX_CHIPS);
   const extraCount = missing.length - MAX_CHIPS;
-  const notAddedItems = missing.filter((m) => !shoppingList.includes(m));
+  const notAddedItems = missing.filter((m) => !hasItem(m));
 
   const { label: catLabel, className: catClass } = CATEGORY_BADGE[recipe.category];
 
@@ -85,7 +85,7 @@ export default function RecipeCard({ recipe, myIngredients }: Props) {
               {missing.length > 0 ? (
                 <div className="flex flex-wrap items-center gap-2">
                   {visibleMissing.map((m) => {
-                    const inList = shoppingList.includes(m);
+                    const inList = hasItem(m);
                     return (
                       <span
                         key={m}
@@ -125,7 +125,7 @@ export default function RecipeCard({ recipe, myIngredients }: Props) {
       >
         <ul className="space-y-1 mb-6">
           {missing.map((m) => {
-            const inList = shoppingList.includes(m);
+            const inList = hasItem(m);
             return (
               <li
                 key={m}
