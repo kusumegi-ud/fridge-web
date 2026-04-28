@@ -37,7 +37,8 @@ export default function Home() {
   const [filter, setFilter] = useState<FilterState>(DEFAULT_FILTER);
   const [showRecipes, setShowRecipes] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
-  const [showCommon, setShowCommon] = useState(true);
+  const [showCommon, setShowCommon] = useState(false);
+  const [showCategory, setShowCategory] = useState(false);
   const commonScrollRef = useRef<HTMLDivElement>(null);
 
   const scrollCommon = (dir: 'left' | 'right') => {
@@ -138,29 +139,42 @@ export default function Home() {
 
         {/* ─── 冷蔵庫の食材 ─── */}
         <section>
-          <div className="flex items-center gap-2 mb-3">
-            <h2 className="text-[16px] font-semibold text-[#111827]">冷蔵庫の食材</h2>
-            <span className="text-[12px] font-medium text-[#16A34A] bg-green-50 px-2 py-0.5 rounded-full border border-green-100">
-              {ingredients.length}品
-            </span>
-          </div>
+          <button
+            onClick={() => setShowCategory((v) => !v)}
+            className="w-full flex items-center justify-between mb-3"
+          >
+            <div className="flex items-center gap-2">
+              <h2 className="text-[16px] font-semibold text-[#111827]">冷蔵庫の食材</h2>
+              <span className="text-[12px] font-medium text-[#16A34A] bg-green-50 px-2 py-0.5 rounded-full border border-green-100">
+                {ingredients.length}品
+              </span>
+            </div>
+            <Icon
+              icon={showCategory ? 'mdi:minus' : 'mdi:plus'}
+              width={20}
+              height={20}
+              className="text-[#9CA3AF]"
+            />
+          </button>
 
-          <div className="grid grid-cols-5 gap-2">
-            {CATEGORIES.map((cat) => (
-              <div
-                key={cat.key}
-                className="flex flex-col items-center gap-1.5 py-3 px-1 border border-[#E5E7EB] rounded-xl bg-white"
-              >
-                {cat.icon ? (
-                  <Icon icon={cat.icon} width={36} height={36} />
-                ) : (
-                  <span className="w-9 h-9 flex items-center justify-center text-[#9CA3AF] text-[20px] font-bold leading-none tracking-widest">···</span>
-                )}
-                <span className="text-[10px] text-[#374151] text-center leading-tight whitespace-pre-line">{cat.label}</span>
-                <span className="text-[14px] font-semibold text-[#111827]">{categoryCounts[cat.key] ?? 0}</span>
-              </div>
-            ))}
-          </div>
+          {showCategory && (
+            <div className="grid grid-cols-5 gap-2">
+              {CATEGORIES.map((cat) => (
+                <div
+                  key={cat.key}
+                  className="flex flex-col items-center gap-1.5 py-3 px-1 border border-[#E5E7EB] rounded-xl bg-white"
+                >
+                  {cat.icon ? (
+                    <Icon icon={cat.icon} width={36} height={36} />
+                  ) : (
+                    <span className="w-9 h-9 flex items-center justify-center text-[#9CA3AF] text-[20px] font-bold leading-none tracking-widest">···</span>
+                  )}
+                  <span className="text-[10px] text-[#374151] text-center leading-tight whitespace-pre-line">{cat.label}</span>
+                  <span className="text-[14px] font-semibold text-[#111827]">{categoryCounts[cat.key] ?? 0}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
 
         {/* ─── よく使う食材 ─── */}
@@ -239,15 +253,6 @@ export default function Home() {
           </button>
         </section>
 
-        {/* ─── 今日のおすすめ ─── */}
-        <button className="w-full flex items-center gap-3 p-4 border border-[#E5E7EB] rounded-xl bg-white active:bg-gray-50 transition-colors">
-          <Icon icon="fluent-emoji-flat:light-bulb" width={36} height={36} className="shrink-0" />
-          <div className="flex-1 text-left">
-            <p className="text-[14px] font-semibold text-[#111827]">今日のおすすめレシピを見る</p>
-            <p className="text-[12px] text-[#6B7280] mt-0.5">冷蔵庫の食材に合わせたおすすめを提案</p>
-          </div>
-          <Icon icon="mdi:chevron-right" width={20} height={20} className="text-[#9CA3AF] shrink-0" />
-        </button>
 
         {/* ─── レシピ検索結果 ─── */}
         {showRecipes && (
