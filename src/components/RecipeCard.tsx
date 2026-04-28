@@ -20,7 +20,7 @@ const CATEGORY_BADGE: Record<Recipe['category'], { label: string; className: str
   chinese:  { label: '中華', className: 'border-[#E5E5E5] text-[#6B7280]' },
 };
 
-const MAX_CHIPS = 3;
+const MAX_VISIBLE = 4;
 
 export default function RecipeCard({ recipe, myIngredients }: Props) {
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -37,9 +37,14 @@ export default function RecipeCard({ recipe, myIngredients }: Props) {
   const missing = getMissingIngredients(recipe, myIngredients);
   const hasIngredients = myIngredients.length > 0;
   const matchRatio = hasIngredients ? matched.length / recipe.ingredients.length : 0;
+  const caloriesPerServing = Math.round(recipe.calories / recipe.servings);
 
-  const visibleMissing = missing.slice(0, MAX_CHIPS);
-  const extraCount = missing.length - MAX_CHIPS;
+  // 持っている食材を先に、不足食材を後に、合計MAX_VISIBLE個表示
+  const matchedSlot = Math.min(matched.length, Math.ceil(MAX_VISIBLE / 2));
+  const missingSlot = Math.min(missing.length, MAX_VISIBLE - matchedSlot);
+  const visibleMatched = matched.slice(0, matchedSlot);
+  const visibleMissing = missing.slice(0, missingSlot);
+  const extraCount = recipe.ingredients.length - visibleMatched.length - visibleMissing.length;
   const notAddedItems = missing.filter((m) => !hasItem(m));
 
   const { label: catLabel, className: catClass } = CATEGORY_BADGE[recipe.category];
@@ -79,7 +84,7 @@ export default function RecipeCard({ recipe, myIngredients }: Props) {
           <div className="flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-[#6B7280] mb-3">
             <span>{recipe.cookTime}分</span>
             <span>{recipe.servings}人前</span>
-            <span>{recipe.calories}kcal</span>
+            <span>{caloriesPerServing}kcal/人</span>
           </div>
 
           {/* 食材マッチ状況 */}
@@ -87,37 +92,40 @@ export default function RecipeCard({ recipe, myIngredients }: Props) {
             <div className="pt-3 border-t border-[#F3F4F6]">
               {/* プログレスバー */}
               <div className="flex items-center gap-2 mb-2">
-                <div className="flex-1 h-1 bg-[#F3F4F6] rounded-full overflow-hidden">
+                <div className="flex-1 h-1.5 bg-[#F3F4F6] rounded-full overflow-hidden">
                   <div
                     className="h-full bg-[#16A34A] rounded-full transition-all"
                     style={{ width: `${matchRatio * 100}%` }}
                   />
                 </div>
-                <span className="text-[12px] font-medium text-[#6B7280] shrink-0">
+                <span className="text-[12px] font-medium text-[#111827] shrink-0">
                   {matched.length}/{recipe.ingredients.length}
+                  <span className="text-[#6B7280] font-normal ml-1">食材が揃っています</span>
                 </span>
               </div>
 
-              {/* 不足食材チップ */}
+              {/* 食材チップ（持っている→緑✓、不足→グレー!） */}
               {missing.length > 0 ? (
                 <>
                   <div className="flex flex-wrap items-center gap-2 mb-2">
-                    {visibleMissing.map((m) => {
-                      const inList = hasItem(m);
-                      return (
-                        <span
-                          key={m}
-                          className={`inline-flex items-center gap-1 text-[12px] font-medium h-7 px-3 rounded-full border ${
-                            inList
-                              ? 'bg-white border-[#16A34A] text-[#16A34A]'
-                              : 'bg-white border-[#E5E5E5] text-[#6B7280]'
-                          }`}
-                        >
-                          {inList && <span className="text-[10px]">✓</span>}
-                          {m}
-                        </span>
-                      );
-                    })}
+                    {visibleMatched.map((m) => (
+                      <span
+                        key={m}
+                        className="inline-flex items-center gap-1 text-[12px] font-medium h-7 px-3 rounded-full border bg-green-50 border-[#16A34A] text-[#16A34A]"
+                      >
+                        <Icon icon="mdi:check-circle" width={13} height={13} />
+                        {m}
+                      </span>
+                    ))}
+                    {visibleMissing.map((m) => (
+                      <span
+                        key={m}
+                        className="inline-flex items-center gap-1 text-[12px] font-medium h-7 px-3 rounded-full border bg-white border-[#E5E5E5] text-[#6B7280]"
+                      >
+                        <Icon icon="mdi:alert-circle-outline" width={13} height={13} className="text-[#F59E0B]" />
+                        {m}
+                      </span>
+                    ))}
                     {extraCount > 0 && (
                       <button
                         onClick={openSheet}
