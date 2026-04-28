@@ -1,11 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Icon } from '@iconify/react';
 import { Recipe } from '@/types';
 import { getMatchedIngredients, getMissingIngredients } from '@/lib/recipeFilter';
 import { useShoppingList } from '@/contexts/ShoppingListContext';
 import BottomSheet from './BottomSheet';
+import IngredientIcon from './icons/IngredientIcon';
 
 interface Props {
   recipe: Recipe;
@@ -22,7 +24,14 @@ const MAX_CHIPS = 3;
 
 export default function RecipeCard({ recipe, myIngredients }: Props) {
   const [sheetOpen, setSheetOpen] = useState(false);
-  const { items: shoppingList, addItem, addItems } = useShoppingList();
+  const [toast, setToast] = useState<string | null>(null);
+  const { hasItem, addItem, addItems } = useShoppingList();
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
 
   const matched = getMatchedIngredients(recipe, myIngredients);
   const missing = getMissingIngredients(recipe, myIngredients);
@@ -31,7 +40,7 @@ export default function RecipeCard({ recipe, myIngredients }: Props) {
 
   const visibleMissing = missing.slice(0, MAX_CHIPS);
   const extraCount = missing.length - MAX_CHIPS;
-  const notAddedItems = missing.filter((m) => !shoppingList.includes(m));
+  const notAddedItems = missing.filter((m) => !hasItem(m));
 
   const { label: catLabel, className: catClass } = CATEGORY_BADGE[recipe.category];
 
@@ -43,6 +52,14 @@ export default function RecipeCard({ recipe, myIngredients }: Props) {
 
   return (
     <>
+      {/* トースト通知 */}
+      {toast && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[60] bg-[#111827] text-white text-[13px] font-medium px-4 py-2 rounded-full shadow-lg pointer-events-none whitespace-nowrap flex items-center gap-1.5">
+          <Icon icon="mdi:check-circle-outline" width={16} height={16} className="text-[#4ADE80]" />
+          {toast}
+        </div>
+      )}
+
       <Link href={`/recipes/${recipe.id}`} className="block">
         <div className="bg-white rounded-2xl border border-[#E5E5E5] p-4 h-full transition-colors active:bg-[#FAFAFA]">
           {/* ヘッダ */}
@@ -83,32 +100,45 @@ export default function RecipeCard({ recipe, myIngredients }: Props) {
 
               {/* 不足食材チップ */}
               {missing.length > 0 ? (
-                <div className="flex flex-wrap items-center gap-2">
-                  {visibleMissing.map((m) => {
-                    const inList = shoppingList.includes(m);
-                    return (
-                      <span
-                        key={m}
-                        className={`inline-flex items-center gap-1 text-[12px] font-medium h-7 px-3 rounded-full border ${
-                          inList
-                            ? 'bg-white border-[#16A34A] text-[#16A34A]'
-                            : 'bg-white border-[#E5E5E5] text-[#6B7280]'
-                        }`}
+                <>
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
+                    {visibleMissing.map((m) => {
+                      const inList = hasItem(m);
+                      return (
+                        <span
+                          key={m}
+                          className={`inline-flex items-center gap-1 text-[12px] font-medium h-7 px-3 rounded-full border ${
+                            inList
+                              ? 'bg-white border-[#16A34A] text-[#16A34A]'
+                              : 'bg-white border-[#E5E5E5] text-[#6B7280]'
+                          }`}
+                        >
+                          {inList && <span className="text-[10px]">✓</span>}
+                          {m}
+                        </span>
+                      );
+                    })}
+                    {extraCount > 0 && (
+                      <button
+                        onClick={openSheet}
+                        className="inline-flex items-center gap-0.5 text-[12px] font-medium h-7 px-3 bg-white border border-[#E5E5E5] text-[#6B7280] rounded-full transition-colors active:border-[#D1D5DB]"
                       >
-                        {inList && <span className="text-[10px]">✓</span>}
-                        {m}
-                      </span>
-                    );
-                  })}
-                  {extraCount > 0 && (
-                    <button
-                      onClick={openSheet}
-                      className="text-[12px] font-medium h-7 px-3 bg-white border border-[#E5E5E5] text-[#6B7280] rounded-full transition-colors active:border-[#D1D5DB]"
-                    >
-                      他{extraCount}品
-                    </button>
-                  )}
-                </div>
+                        他{extraCount}品
+                        <Icon icon="mdi:chevron-down" width={14} height={14} />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* 買い物リストへ追加 CTA */}
+                  <button
+                    onClick={openSheet}
+                    className="w-full flex items-center gap-2 mt-1 pt-2 border-t border-[#F3F4F6] text-[13px] text-[#6B7280] active:text-[#374151]"
+                  >
+                    <Icon icon="mdi:cart-outline" width={16} height={16} className="shrink-0" />
+                    <span className="flex-1 text-left">不足食材を買い物リストに追加</span>
+                    <Icon icon="mdi:chevron-right" width={16} height={16} className="shrink-0" />
+                  </button>
+                </>
               ) : (
                 <p className="text-[13px] font-medium text-[#16A34A]">✓ すべての食材がそろっています</p>
               )}
@@ -121,24 +151,32 @@ export default function RecipeCard({ recipe, myIngredients }: Props) {
       <BottomSheet
         isOpen={sheetOpen}
         onClose={() => setSheetOpen(false)}
-        title={`不足している食材（あと${missing.length}品）`}
+        title={`不足している食材（${missing.length}品）`}
+        subtitle={`このレシピを作るには、あと${missing.length}品必要です。`}
       >
         <ul className="space-y-1 mb-6">
           {missing.map((m) => {
-            const inList = shoppingList.includes(m);
+            const inList = hasItem(m);
             return (
               <li
                 key={m}
                 className="flex items-center justify-between py-2.5 border-b border-[#F3F4F6] last:border-0"
               >
-                <div className="flex items-center gap-2">
-                  {inList && <span className="text-[#16A34A] text-[13px] font-bold">✓</span>}
-                  <span className={`text-[14px] ${inList ? 'text-[#16A34A]' : 'text-[#111827]'}`}>
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-[#F9FAFB] border border-[#F3F4F6] flex items-center justify-center shrink-0">
+                    <IngredientIcon name={m} size={22} />
+                  </div>
+                  <span className={`text-[14px] font-medium ${inList ? 'text-[#16A34A]' : 'text-[#111827]'}`}>
                     {m}
                   </span>
                 </div>
                 <button
-                  onClick={() => { if (!inList) addItem(m); }}
+                  onClick={() => {
+                    if (!inList) {
+                      addItem(m);
+                      setToast(`「${m}」をリストに追加しました`);
+                    }
+                  }}
                   disabled={inList}
                   className={`text-[13px] font-medium h-8 px-4 rounded-full transition-colors shrink-0 ml-3 border ${
                     inList
@@ -155,7 +193,10 @@ export default function RecipeCard({ recipe, myIngredients }: Props) {
 
         {notAddedItems.length > 0 && (
           <button
-            onClick={() => addItems(notAddedItems)}
+            onClick={() => {
+              addItems(notAddedItems);
+              setToast(`${notAddedItems.length}品をリストに追加しました`);
+            }}
             className="w-full h-12 bg-[#16A34A] active:bg-green-800 text-white text-[15px] font-semibold rounded-full transition-colors"
           >
             すべてまとめて追加（{notAddedItems.length}品）

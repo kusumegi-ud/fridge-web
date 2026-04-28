@@ -6,10 +6,11 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   title: string;
+  subtitle?: string;
   children: ReactNode;
 }
 
-export default function BottomSheet({ isOpen, onClose, title, children }: Props) {
+export default function BottomSheet({ isOpen, onClose, title, subtitle, children }: Props) {
   useEffect(() => {
     if (isOpen) document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = ''; };
@@ -30,13 +31,17 @@ export default function BottomSheet({ isOpen, onClose, title, children }: Props)
         </div>
 
         {/* ヘッダー */}
-        <div className="flex items-center justify-between px-5 py-3 shrink-0 border-b border-gray-100">
-          <h3 className="font-bold text-gray-800 text-base">{title}</h3>
+        <div className="flex items-start justify-between px-5 py-3 shrink-0 border-b border-gray-100">
+          <div>
+            <h3 className="font-bold text-gray-800 text-base">{title}</h3>
+            {subtitle && <p className="text-[12px] text-[#6B7280] mt-0.5">{subtitle}</p>}
+          </div>
           <button
             onClick={onClose}
-            className="text-sm text-gray-400 active:text-gray-600 px-2 py-1"
+            className="w-7 h-7 rounded-full bg-[#F3F4F6] flex items-center justify-center text-[#6B7280] text-[16px] leading-none active:bg-[#E5E7EB] shrink-0 ml-3"
+            aria-label="閉じる"
           >
-            閉じる
+            ×
           </button>
         </div>
 

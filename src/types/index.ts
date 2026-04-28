@@ -24,3 +24,9 @@ export interface Ingredient {
 
 export type CookTimeFilter = 'any' | 'under15' | 'under30' | 'over30';
 export type CategoryFilter = 'all' | 'japanese' | 'western' | 'chinese';
+
+export interface ShoppingItem {
+  name: string;
+  type: 'missing' | 'added';
+  checked: boolean;
+}
